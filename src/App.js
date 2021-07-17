@@ -3,11 +3,32 @@ import './App.css';
 import { useState } from 'react'
 
 function App() {
-  const [result, setResult] = useState('');
+  const [results, setResults] = useState('');
   const [keyword, setkeyword] = useState('')
+  const endPoint = `https://www.googleapis.com/books/v1/volumes?q=`;
+  const baseUrl = endPoint + keyword;
+
+
+
   const handleChange = (e) => {
     const newKeyword = e.target.value;
     setkeyword(newKeyword);
+  }
+  const seachBooks = () => {
+    axios.get(baseUrl)
+      .then(res => {
+        console.log(res.data.items);
+        const newResults = res.data.items;
+        setResults(newResults);
+      }).catch(err => {
+        console.log(err);
+      });
+  }
+  const confirm = (result) => {
+    console.log(typeof result.volumeInfo.imageLinks);
+    console.log('image', result.volumeInfo.imageLinks);
+    console.log('aut', result.volumeInfo.authors);
+
   }
 
   return (
@@ -30,55 +51,46 @@ function App() {
         </div>
         <div className="block">
           <div className="buttons">
-          <button className="button is-primary">検索</button>
+            <button
+              className="button is-primary"
+              onClick={seachBooks}
+            >検索</button>
         </div>
       
         </div>
       </div>
-      {result
+      {results
         && <div className="result_area">
         <h3 className="title is-4">検索結果</h3>
-        <div className="cards">
-          <div className="card block">
-            <div className="card-image">
-              <figure className="image is-2by3">
-                <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image" />
-              </figure>
-            </div>
+        <div className="cards block">
+          {results.map(result => {
+            return (
+              <div className="card block"　key={result.id}>
+                
+                {/* <div className="card-image">
+                  <figure className="image is-2by3">
+                  </figure>
+                  <button onClick={() => confirm(result)}>sss</button>
+                </div> */}
             <div className="card-content">
               <div className="media">
-                <div className="media-left">
-                  <figure className="image is-48x48">
-                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image" />
-                  </figure>
-                </div>
                 <div className="media-content">
-                  <p className="title is-4">John Smith</p>
-                  <p className="subtitle is-6">@johnsmith</p>
+                      <p className="title is-5"> {result.volumeInfo.title}</p>
+                      {
+                        result.volumeInfo.hasOwnProperty('authors') &&
+                        <p className="subtitle is-6">
+                        筆者 {result.volumeInfo.authors[0]}
+                      </p>
+                      }
+                      
                 </div>
               </div>
             </div>
-          </div>
-           <div className="card block">
-            <div className="card-image">
-              <figure className="image is-2by3">
-                <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image" width="280px" />
-              </figure>
-            </div>
-            <div className="card-content">
-              <div className="media">
-                <div className="media-left">
-                  <figure className="image is-48x48">
-                    <img src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image" />
-                  </figure>
-                </div>
-                <div className="media-content">
-                  <p className="title is-4">John Smith</p>
-                  <p className="subtitle is-6">@johnsmith</p>
-                </div>
-              </div>
-            </div>
-          </div>
+               
+             </div>
+            )
+          })}
+
         </div>
         <div className="section">
           <nav className="pagination" role="navigation" aria-label="pagination">

@@ -10,9 +10,11 @@
 
 .cards {
   display: flex;
+  flex-wrap: wrap;
 }
 .card {
   margin: 20px;
+  width: 220px;
 }
 
 /* .seach_input {
